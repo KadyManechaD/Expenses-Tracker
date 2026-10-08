@@ -12,7 +12,6 @@ from db import ExpensesDb
 console = Console()
 
 expensesDb = ExpensesDb()
-
 expensesDb.setup()
 
 
@@ -26,7 +25,7 @@ def show_header():
     )
     
     content = Text.assemble(title , subtitle)
-
+    
     console.print(
         Panel(
             content,
@@ -77,6 +76,8 @@ def add_expense():
 
 
 def add_category():
+    categories = expensesDb.get_categories()
+    
     while True:
         name = Prompt.ask("🏷️ Enter the category name").strip()
 
