@@ -7,12 +7,23 @@ from rich.table import Table
 from rich.text import Text
 from rich.panel import Panel
 
+from db import ExpensesDb
+
 console = Console()
 
-depenses = [] # [{ description, date , price , category}]
+expensesDb = ExpensesDb()
+
+expensesDb.setup()
+
+
+depenses = [
+        { "description" : "je ne sais pas ", "date" : "2026-15-25" , "price" : 500 , "category_id" : 2}
+    ] # [{ description, date , price , category}]
+
+
 categories = [
-    {"name" : "Bills"},
-    {"name" : "Rent"},
+    {"id" : 1 ,"name" : "Bills"},
+    {"id" : 2 ,"name" : "Rent"},
     {"name" : "Groceries"} ,
     {"name" : "Emergencies"},
     {"name" : "Shopping"},
@@ -23,10 +34,6 @@ categories = [
     {"name" : "Unexpected Expenses"},
     {"name" : "Others"},
 ]
-
-
-
-
 
 
 def show_header():
