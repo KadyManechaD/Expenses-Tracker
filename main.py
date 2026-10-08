@@ -16,26 +16,6 @@ expensesDb = ExpensesDb()
 expensesDb.setup()
 
 
-depenses = [
-        { "description" : "je ne sais pas ", "date" : "2026-15-25" , "price" : 500 , "category_id" : 2}
-    ] # [{ description, date , price , category}]
-
-
-categories = [
-    {"id" : 1 ,"name" : "Bills"},
-    {"id" : 2 ,"name" : "Rent"},
-    {"name" : "Groceries"} ,
-    {"name" : "Emergencies"},
-    {"name" : "Shopping"},
-    {"name" : "Subscriptions"},
-    {"name" : "Entertainment"},
-    {"name" : "Dining out"},
-    {"name" : "Phone and Internet"},
-    {"name" : "Unexpected Expenses"},
-    {"name" : "Others"},
-]
-
-
 def show_header():
     title = Text()
     title.append("EXPENSE " , style="bold cyan")
@@ -57,16 +37,23 @@ def show_header():
     )
 
 def add_expense():
+    categories = expensesDb.get_categories()
+
     if len(categories) == 0:
-        print("❌ No category yet !")
+        print("❌ No category yet!")
         return
+
     price = FloatPrompt.ask("💰 Enter the price")
 
     category_name = questionary.select(
         "🏷️ Choose a category",
-        choices=[category["name"] for category in categories],
+        choices=[category[1] for category in categories],
     ).ask()
 
+    category = next(
+        category for category in categories
+        if category[1] == category_name
+    )
 
     description = Prompt.ask(
         "📝 Enter the expense's description",
@@ -78,37 +65,16 @@ def add_expense():
         default=datetime.now().strftime("%Y-%m-%d")
     )
 
-    date = datetime.strptime(date_str, "%Y-%m-%d")
-
-
-    depenses.append({
-        "description": description,
-        "date": date,
-        "price": price,
-        "category": category_name,
-    })
+    expensesDb.add_expense(
+        description,
+        price,
+        date_str,
+        category[0]
+    )
 
     print("✅ Expense added!")
 
 
-def display_expenses(expenses):
-    table = Table(title="💰 Expenses")
-
-    table.add_column("Date")
-    table.add_column("Description")
-    table.add_column("Category")
-    table.add_column("Price", justify="right")
-
-    for expense in expenses:
-        table.add_row(
-            expense["date"].strftime("%Y-%m-%d"),
-            expense["description"],
-            expense["category"],
-            f"${expense['price']:.2f}",
-        )
-
-    console.print(table)
-    
 
 def add_category():
     while True:
@@ -124,15 +90,31 @@ def add_category():
 
         break
 
-    categories.append({
-        "name": name,
-    })
+    expensesDb.add_category(name)
 
     print(f"✅ {name} successfully added!")
 
 def view_expenses():
-    display_expenses(depenses)
+    expenses = expensesDb.get_expenses()
 
+    table = Table(title="💰 Expenses")
+
+    table.add_column("Date")
+    table.add_column("Description")
+    table.add_column("Category")
+    table.add_column("Price", justify="right")
+
+    for expense in expenses:
+        table.add_row(
+            expense[3],
+            expense[1],
+            expense[4],
+            f"${expense[2]:.2f}",
+        )
+
+    console.print(table)
+    
+    
 def exit_program():
     print("Good Bye!")
     sys.exit()
@@ -140,8 +122,8 @@ def exit_program():
 def view_total():
     total = 0
     
-    for i in depenses:
-        total += i["price"]
+    for i in expensesDb.get_expenses():
+        total += i[2]
     
     print(f"Total : ${total:.2f}")
     

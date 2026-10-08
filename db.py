@@ -10,7 +10,33 @@ class ExpensesDb:
     def setup(self):
         self.create_table_categories()
         self.create_table_expenses()
+        self.seed_categories()
 
+
+    def seed_categories(self):
+        categories = [
+            "Bills",
+            "Rent",
+            "Groceries",
+            "Emergencies",
+            "Shopping",
+            "Subscriptions",
+            "Entertainment",
+            "Dining out",
+            "Phone and Internet",
+            "Unexpected Expenses",
+            "Others",
+        ]
+
+        for category in categories:
+            self.mycursor.execute(
+                "INSERT OR IGNORE INTO categories (name) VALUES (?)",
+                (category,)
+            )
+
+        self.mydb.commit()
+        
+    
     def create_table_categories(self):
         self.mycursor.execute("""
             CREATE TABLE IF NOT EXISTS categories (
