@@ -1,5 +1,5 @@
 from datetime import datetime
-from rich.prompt import Prompt , IntPrompt
+from rich.prompt import Prompt , FloatPrompt
 import questionary
 import sys
 from rich.console import Console
@@ -53,7 +53,7 @@ def add_expense():
     if len(categories) == 0:
         print("❌ No category yet !")
         return
-    price = IntPrompt.ask("💰 Enter the price")
+    price = FloatPrompt.ask("💰 Enter the price")
 
     category_name = questionary.select(
         "🏷️ Choose a category",
@@ -130,10 +130,20 @@ def exit_program():
     print("Good Bye!")
     sys.exit()
     
+def view_total():
+    total = 0
+    
+    for i in depenses:
+        total += i["price"]
+    
+    print(f"Total : ${total:.2f}")
+    
+
 list_menu = [
     {"name": "💸 Add an expense", "function": add_expense},
-    {"name": "🏷️ Add category", "function": add_category},
+    {"name": "🏷️  Add category", "function": add_category},
     {"name": "📊 View expenses", "function": view_expenses},
+    {"name": "📊 View Total", "function": view_total},
     {"name": "📅 View expenses between two dates", "function": None},
     {"name": "🗂️  View spending by category", "function": None},
     {"name": "🚪 Exit", "function": exit_program},
@@ -154,7 +164,8 @@ def print_menu():
 
     if selected["function"]:
         selected["function"]()
-
+    else:
+        print(f"❌ {selected["name"]} not implemented")
 
 show_header()
 while True:
